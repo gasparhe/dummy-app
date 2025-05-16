@@ -31,11 +31,9 @@ jobs:
         run: npm run start &
 
       - name: ⏱️ Wait for localhost to be ready
-        uses: nev7n/wait_for_response@v1.0.1
+        uses: jakejarvis/wait-action@v0.1.1
         with:
-          url: http://localhost:4200
-          timeout: 90000
-          interval: 10000
+          time: 10s
           
       - name: 🚦 Run Cypress E2E tests (local)
         run: npx cypress run --config baseUrl=http://localhost:4200
