@@ -57,3 +57,28 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+
+## CI/CD Pipeline 🚀
+
+This project includes an automated CI/CD pipeline that runs on GitHub Actions. The pipeline consists of two master jobs:
+
+### 1. Unit & E2E Tests 🧪
+Runs on every Pull Request to the master branch:
+- Executes unit tests with Jasmine/Karma in headless mode
+- Starts the Angular development server
+- Runs E2E tests with Cypress
+
+### 2. Vercel Deployment 🚀
+Executes when pushing to the master branch:
+- Requires successful completion of tests
+- Deploys the application to Vercel
+- Runs E2E tests in the production environment
+
+### Pipeline Status
+The pipeline automatically verifies:
+- ✅ Unit Tests
+- ✅ E2E Tests
+- ✅ Production Deployment
+
+For more details about the configuration, check the `.github/workflows/main.yml` file.
