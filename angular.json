@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ww-test-app": {
+    "dummy-app": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,8 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/ww-test-app",
+            "outputPath": "dist/dummy-app",
+            "baseHref": "/",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -64,10 +65,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "ww-test-app:build:production"
+              "buildTarget": "dummy-app:build:production"
             },
             "development": {
-              "buildTarget": "ww-test-app:build:development"
+              "buildTarget": "dummy-app:build:development"
             }
           },
           "defaultConfiguration": "development"

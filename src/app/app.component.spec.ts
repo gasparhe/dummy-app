@@ -17,13 +17,13 @@ describe('AppComponent', () => {
   it(`should have the 'ww-test-app' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('ww-test-app');
+    expect(app.title).toEqual('dummy-app');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, ww-test-app');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Data Table Demo');
   });
 });
