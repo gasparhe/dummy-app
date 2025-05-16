@@ -34,9 +34,9 @@ jobs:
         if: github.event_name == 'push'
         uses: cypress-io/github-action@v6
         with:
-          wait-on: 'https://your-vercel-domain.vercel.app'
+          wait-on: 'https://dummy-ihnzymfmu-gasparhes-projects.vercel.app'
           wait-on-timeout: 120 # seconds
-          config: baseUrl=https://your-vercel-domain.vercel.app
+          config: baseUrl=https://dummy-ihnzymfmu-gasparhes-projects.vercel.app
 
   deploy:
     name: Deploy to Vercel
