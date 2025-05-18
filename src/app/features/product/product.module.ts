@@ -11,9 +11,8 @@ const routes: Routes = [
         path: 'product/:pId', 
         component: ProductFormComponent,
         data: {
-            renderMode: 'server'
+            renderMode: 'client'
         }
-
     }
 ];
 
