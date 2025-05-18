@@ -5,17 +5,24 @@ import { DataTableComponent } from '../../components/data-table/data-table.compo
 import { ProductFormComponent } from '../../components/product-form/product-form.component';
 
 const routes: Routes = [
-  { path: '', component: DataTableComponent },
-  { path: 'product', component: ProductFormComponent },
-  { path: 'product/:pId', component: ProductFormComponent }
+    { path: '', component: DataTableComponent },
+    { path: 'product', component: ProductFormComponent },
+    {
+        path: 'product/:pId', 
+        component: ProductFormComponent,
+        data: {
+            renderMode: 'server'
+        }
+
+    }
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    DataTableComponent,
-    ProductFormComponent
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        DataTableComponent,
+        ProductFormComponent
+    ]
 })
 export class ProductModule { }
