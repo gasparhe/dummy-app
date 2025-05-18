@@ -30,7 +30,7 @@ describe('ActionButtonComponent', () => {
 
   it('should set icon input correctly', () => {
     component.icon = 'delete';
-    fixture.detectChanges(); // Actualiza el componente con el nuevo input
+    fixture.detectChanges(); // Update the component
     expect(component.icon).toBe('delete');
   });
 
@@ -45,7 +45,7 @@ describe('ActionButtonComponent', () => {
     const actionSpy = jasmine.createSpy('action');
     component.action = actionSpy;
 
-    // Simulamos un clic en el botón
+    // Simulate click on button
     const button = fixture.nativeElement.querySelector('button');
     button.click();
 

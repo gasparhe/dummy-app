@@ -65,7 +65,7 @@ export class ProductFormComponent implements OnInit {
           this.productForm.patchValue(product);
           this.loading = false;
         },
-        error: (err) => {
+        error: () => {
           this.loading = false;
           this.errorMessage = 'Error loading product';
         }

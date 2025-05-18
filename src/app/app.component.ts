@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { DataTableComponent } from './components/data-table/data-table.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, DataTableComponent],
+  imports: [RouterOutlet],
   template: `
     <div class="container">
       <h1>Data Table Demo</h1>
@@ -24,6 +23,4 @@ import { DataTableComponent } from './components/data-table/data-table.component
     }
   `]
 })
-export class AppComponent {
-  title = 'dummy-app';
-}
+export class AppComponent {}
