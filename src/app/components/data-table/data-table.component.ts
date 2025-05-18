@@ -1,97 +1,192 @@
-import { Component } from '@angular/core';
-import { MatTableModule } from '@angular/material/table';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatTableModule, MatTable } from '@angular/material/table';
+import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
-
-interface TableData {
-  name: string;
-  column2: string;
-  column3: string;
-  column4: string;
-}
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ProductService, Product } from '../../services/product.service';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';import { ActionButtonComponent } from '../action-button/action-button.component';
 
 @Component({
   selector: 'app-data-table',
   standalone: true,
-  imports: [MatTableModule, MatIconModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatButtonModule,
+    ReactiveFormsModule,
+    ActionButtonComponent
+  ],
+  styleUrls: ['./data-table.component.css'],
   template: `
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" aria-label="Data table">
-      <!-- Name Column -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef role="columnheader">Name</th>
-        <td mat-cell *matCellDef="let element">{{element.name}}</td>
-      </ng-container>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Search</mat-label>
+      <input matInput [formControl]="searchControl" placeholder="Search products...">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
 
-      <!-- Column 2 -->
-      <ng-container matColumnDef="column2">
-        <th mat-header-cell *matHeaderCellDef role="columnheader">Column 2</th>
-        <td mat-cell *matCellDef="let element">{{element.column2}}</td>
-      </ng-container>
-
-      <!-- Column 3 -->
-      <ng-container matColumnDef="column3">
-        <th mat-header-cell *matHeaderCellDef role="columnheader">Column 3</th>
-        <td mat-cell *matCellDef="let element">{{element.column3}}</td>
-      </ng-container>
-
-      <!-- Column 4 -->
-      <ng-container matColumnDef="column4">
-        <th mat-header-cell *matHeaderCellDef role="columnheader">Column 4</th>
-        <td mat-cell *matCellDef="let element">{{element.column4}}</td>
-      </ng-container>
-
-      <!-- Edit Column -->
-      <ng-container matColumnDef="edit">
-        <th mat-header-cell *matHeaderCellDef role="columnheader" aria-label="Edit column"></th>
-        <td mat-cell *matCellDef="let element; let index = index">
-          <button mat-icon-button aria-label="Edit item" color="primary" (click)="onEdit(element, index)">
-            <mat-icon>edit</mat-icon>
-          </button>
+    <table mat-table [dataSource]="products" matSort class="mat-elevation-z8">
+      <!-- Image Column -->
+      <ng-container matColumnDef="image">
+        <th mat-header-cell *matHeaderCellDef>Image</th>
+        <td mat-cell *matCellDef="let product" class="cell-image">
+          <img [src]="product.images[0]" [alt]="product.title">
         </td>
       </ng-container>
 
-      <!-- Delete Column -->
-      <ng-container matColumnDef="delete">
-        <th mat-header-cell *matHeaderCellDef role="columnheader" aria-label="Delete column"></th>
-        <td mat-cell *matCellDef="let element; let index = index">
-          <button mat-icon-button aria-label="Delete item" color="warn" (click)="onDelete(element, index)">
-            <mat-icon>delete</mat-icon>
-          </button>
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+        <td mat-cell *matCellDef="let product" class="cell-title">{{product.title}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+        <td mat-cell *matCellDef="let product" class="cell-category">{{product.category}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
+        <td mat-cell *matCellDef="let product" class="cell-price">{{product.price | currency}}</td>
+      </ng-container>
+
+      <!-- Actions: Edit and Delete in the same row -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let product" class="cell-actions">
+          <app-action-button
+            [icon]="'edit'"
+            [iconClass]="'icon-orange'"
+            [action]="onEdit.bind(this, product)">
+          </app-action-button>
+          <app-action-button
+            [icon]="'delete'"
+            [iconClass]="'icon-red'"
+            [action]="onDelete.bind(this, product)">
+          </app-action-button>
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns" role="row"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;" role="row"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-  `,
-  styles: [`
-    table {
-      width: 100%;
-      margin: 20px 0;
-    }
-    .mat-mdc-row:hover {
-      background-color: #f5f5f5;
-    }
-  `]
+
+    <mat-paginator 
+      [length]="totalProducts"
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      (page)="handlePageEvent($event)"
+      aria-label="Select page">
+    </mat-paginator>
+  `
 })
-export class DataTableComponent {
-  displayedColumns: string[] = ['name', 'column2', 'column3', 'column4', 'edit', 'delete'];
+export class DataTableComponent implements OnInit, AfterViewInit {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatTable) table!: MatTable<Product>;
 
-  constructor(private router: Router) {}
+  displayedColumns: string[] = ['image', 'title', 'category', 'price', 'actions'];
+  products: Product[] = [];
+  totalProducts = 0;
+  searchControl = new FormControl('');
 
-  onEdit(element: TableData, index: number): void {
-    this.router.navigate(['/edit', index]);
+  constructor(
+    private productService: ProductService,
+    private router: Router
+  ) {}
+
+  ngOnInit() {
+    // Set debounce in the search
+    this.searchControl.valueChanges.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap(query => {
+        // Restart page index when do a search
+        if (query) {
+          this.paginator.pageIndex = 0;
+        }
+        
+        const params = {
+          limit: this.paginator?.pageSize || 10,
+          skip: query ? 0 : (this.paginator?.pageIndex * (this.paginator?.pageSize || 10))
+        };
+        
+        return query ? 
+          this.productService.searchProducts(query, params) : 
+          this.productService.getProducts(params);
+      })
+    ).subscribe(response => {
+      this.products = response.products;
+      this.totalProducts = response.total;
+      if (this.table) {
+        this.table.renderRows();
+      }
+    });
+
+    // do first query
+    this.loadProducts();
   }
 
-  onDelete(element: TableData, index: number): void {
-    this.router.navigate(['/delete', index]);
+  
+  onEdit(product: Product) {
+    this.router.navigate(['/edit', product.id]);
+  }
+
+  onDelete(product: Product) {
+    this.router.navigate(['/delete', product.id]);
+  }
+
+  ngAfterViewInit() {
+    // Subscribe to sort change events and reload products when they change
+    this.sort.sortChange.subscribe(() => {
+      this.paginator.pageIndex = 0;
+      this.loadProducts();
+    });
+  }
+  handlePageEvent(event: PageEvent) {
+    // Update page size and index
+    this.paginator.pageSize = event.pageSize;
+    this.paginator.pageIndex = event.pageIndex;
+    this.loadProducts();
+  }
+
+  loadProducts() {
+    const params = {
+      limit: this.paginator?.pageSize || 10,
+      skip: this.paginator?.pageIndex * (this.paginator?.pageSize || 10),
+      sortBy: this.sort?.active,
+      order: this.sort?.direction as 'asc' | 'desc'
+    };
+
+    const query = this.searchControl.value;
+    
+    if (query) {
+      this.productService.searchProducts(query, params).subscribe(response => {
+        this.products = response.products;
+        this.totalProducts = response.total;
+        if (this.table) {
+          this.table.renderRows();
+        }
+      });
+    } else {
+      this.productService.getProducts(params).subscribe(response => {
+        this.products = response.products;
+        this.totalProducts = response.total;
+        if (this.table) {
+          this.table.renderRows();
+        }
+      });
+    }
   }
   
-  dataSource: TableData[] = [
-    { name: 'Item 1', column2: 'Value 2-1', column3: 'Value 3-1', column4: 'Value 4-1' },
-    { name: 'Item 2', column2: 'Value 2-2', column3: 'Value 3-2', column4: 'Value 4-2' },
-    { name: 'Item 3', column2: 'Value 2-3', column3: 'Value 3-3', column4: 'Value 4-3' },
-    { name: 'Item 4', column2: 'Value 2-4', column3: 'Value 3-4', column4: 'Value 4-4' },
-  ];
+
 }

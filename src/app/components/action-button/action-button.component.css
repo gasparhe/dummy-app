@@ -1,0 +1,26 @@
+.icon-orange .icon-red {
+    border: 0;
+    background-color: transparent;
+}
+.icon-orange {
+    color: orange;
+}
+
+.icon-red {
+    color: tomato;
+}
+
+.action-button {
+  background: none;
+  border: none;
+  outline: none;
+}
+
+.action-button:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.action-button .mat-icon {
+  background: transparent;
+  border: none;
+}
