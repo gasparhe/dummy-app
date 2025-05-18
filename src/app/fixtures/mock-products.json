@@ -1,0 +1,23 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "title": "Test Product 1",
+      "description": "Description 1",
+      "category": "Category 1",
+      "price": 100,
+      "images": ["mock-image.jpg"]
+    },
+    {
+      "id": 2,
+      "title": "Test Product 2",
+      "description": "Description 2",
+      "category": "Category 2",
+      "price": 200,
+      "images": ["mock-image.jpg"]
+    }
+  ],
+  "total": 2,
+  "skip": 0,
+  "limit": 10
+}

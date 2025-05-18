@@ -1,63 +1,118 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { ComponentFixture, TestBed, waitForAsync, fakeAsync, tick } from '@angular/core/testing';
 import { DataTableComponent } from './data-table.component';
-import { MatTableModule } from '@angular/material/table';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+import { ProductService } from '../../services/product.service';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { of } from 'rxjs';
+import { Router } from '@angular/router';
+import { ActionButtonComponent } from '../action-button/action-button.component';
+import { PageEvent } from '@angular/material/paginator';
+import mockProductData from '../../fixtures/mock-products.json';
+import { EventEmitter } from '@angular/core';
 
-import { By } from '@angular/platform-browser';
-
-describe('DataTableComponent (standalone)', () => {
+describe('DataTableComponent', () => {
   let component: DataTableComponent;
   let fixture: ComponentFixture<DataTableComponent>;
-  let router: jasmine.SpyObj<Router>;
+  let productServiceMock: jasmine.SpyObj<ProductService>;
+  let routerMock: jasmine.SpyObj<Router>;
 
-  beforeEach(async () => {
-    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+  beforeEach(waitForAsync(() => {
+    productServiceMock = jasmine.createSpyObj('ProductService', ['getProducts', 'searchProducts']);
+    routerMock = jasmine.createSpyObj('Router', ['navigate']);
 
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [
-        DataTableComponent, // standalone component
-        MatTableModule,
-        MatIconModule,
-        MatButtonModule,
-        
+        NoopAnimationsModule,
+        // DataTableComponent is standalone. Needs to import dependencies(Material modules, ReactiveFormsModule).
+        // ActionButtonComponent is standalone. Needs DataTableComponent.
+        DataTableComponent,
+        ActionButtonComponent
       ],
       providers: [
-        { provide: Router, useValue: router }
+        { provide: ProductService, useValue: productServiceMock },
+        { provide: Router, useValue: routerMock }
       ]
     }).compileComponents();
+  }));
 
+  beforeEach(() => {
+    productServiceMock.getProducts.and.returnValue(of(mockProductData));
+    productServiceMock.searchProducts.and.returnValue(of(mockProductData));
     fixture = TestBed.createComponent(DataTableComponent);
     component = fixture.componentInstance;
 
-    // Provide mock data
-    component.dataSource = [
-      { column2: "0", column3: "0", column4: "0", name: 'Item 0' },
-      { column2: "1", column3: "1", column4: "1", name: 'Item 1' }
-    ];
+    // Init paginator
+    component.paginator = {
+      pageIndex: 0,
+      pageSize: 10,
+      length: 0,
+      page: new EventEmitter(),
+      hasNextPage: () => false,
+      hasPreviousPage: () => false
+    } as any;
 
     fixture.detectChanges();
   });
 
-  it('should create the component', () => {
+  afterEach(() => {
+    fixture.destroy();
+  });
+
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render correct number of table rows', () => {
-    const rows = fixture.nativeElement.querySelectorAll('tr.mat-mdc-row');
-    expect(rows.length).toBe(component.dataSource.length);
+  it('should load products on init', () => {
+    expect(productServiceMock.getProducts).toHaveBeenCalledWith({
+      limit: 10,
+      skip: 0,
+      sortBy: undefined,
+      order: undefined
+    });
+    expect(component.products.length).toBe(mockProductData.products.length);
+    expect(component.totalProducts).toBe(mockProductData.total);
   });
 
-  it('should navigate to edit page when edit button is clicked', () => {
-    const editButton = fixture.debugElement.queryAll(By.css('button[aria-label="Edit item"]'))[0];
-    editButton.triggerEventHandler('click', null);
-    expect(router.navigate).toHaveBeenCalledOnceWith(['/edit', 0]);
+  it('should handle search', fakeAsync(() => {
+    component.searchControl.setValue('test');
+    tick(400); // Wait debounceTime
+    // searchProducts called by the subscirption to valueChanges.
+    // After query -> skip = 0.
+    const expectedSearchParams = {
+      limit: component.paginator?.pageSize || 10,
+      skip: 0
+    };
+    expect(productServiceMock.searchProducts).toHaveBeenCalledWith('test', expectedSearchParams);
+    expect(component.products.length).toBe(mockProductData.products.length);
+    expect(component.totalProducts).toBe(mockProductData.total);
+  }));
+
+  it('should handle page event', () => {
+    // Event page simualted
+    const pageEvent: PageEvent = { pageIndex: 1, pageSize: 5, length: mockProductData.total }; // <--- Usa mockProductData
+    component.handlePageEvent(pageEvent);
+
+    expect(component.paginator.pageIndex).toBe(1);
+    expect(component.paginator.pageSize).toBe(5);
+
+    // loadProducts called twice: ngOnInit + handlePageEvent.
+    expect(productServiceMock.getProducts).toHaveBeenCalledTimes(2);
+
+    const expectedParams = {
+      limit: 5,
+      skip: 5, // 1 * 5
+      sortBy: component.sort?.active,
+      order: component.sort?.direction as 'asc' | 'desc'
+    };
+    expect(productServiceMock.getProducts).toHaveBeenCalledWith(jasmine.objectContaining(expectedParams));
   });
 
-  it('should navigate to delete page when delete button is clicked', () => {
-    const deleteButton = fixture.debugElement.queryAll(By.css('button[aria-label="Delete item"]'))[0];
-    deleteButton.triggerEventHandler('click', null);
-    expect(router.navigate).toHaveBeenCalledWith(['/delete', 0]);
+  it('should navigate on edit', () => {
+    component.onEdit(mockProductData.products[0]);
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/edit', mockProductData.products[0].id]);
+  });
+
+  it('should navigate on delete', () => {
+    component.onDelete(mockProductData.products[1]);
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/delete', mockProductData.products[1].id]);
   });
 });
