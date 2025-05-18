@@ -55,4 +55,17 @@ export class ProductService {
   deleteProduct(id: number): Observable<Product> {
     return this.http.delete<Product>(`${this.baseUrl}/${id}`);
   }
+
+  addProduct(product: Omit<Product, 'id'>): Observable<Product> {
+    return this.http.post<Product>(
+      `${this.baseUrl}/add`, product);
+  }
+
+  updateProduct(id: number, product: Partial<Product>): Observable<Product> {
+    return this.http.put<Product>(`${this.baseUrl}/${id}`, product);
+  }
+
+  getProductById(id: number): Observable<Product> {
+    return this.http.get<Product>(`${this.baseUrl}/${id}`);
+  }
 }

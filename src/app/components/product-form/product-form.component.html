@@ -1,0 +1,108 @@
+<div class="product-form-container">
+  <h1>{{isEditMode ? 'Edit Product' : 'Create New Product'}}</h1>
+  
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-alert" data-testid="error-message" role="alert" aria-live="assertive">
+    {{ errorMessage }}
+  </div>
+
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form" data-testid="product-form" role="form" [attr.aria-label]="isEditMode ? 'Edit Product Form' : 'Create Product Form'">
+    <!-- Title Field -->
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input 
+        matInput 
+        formControlName="title"
+        placeholder="Enter product title"
+        required
+        data-testid="title-input"
+        [attr.aria-label]="'Product title'"
+        [attr.aria-required]="true"
+        [attr.aria-invalid]="productForm.get('title')?.invalid && productForm.get('title')?.touched">
+      <mat-error *ngIf="productForm.get('title')?.hasError('required')" data-testid="title-error" role="alert">
+        Title is required
+      </mat-error>
+      <mat-error *ngIf="productForm.get('title')?.hasError('maxlength')">
+        Title must be less than 100 characters
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Category Field -->
+    <mat-form-field appearance="outline">
+      <mat-label>Category</mat-label>
+      <input 
+        matInput 
+        formControlName="category"
+        placeholder="Enter product category"
+        required
+        data-testid="category-input"
+        [attr.aria-label]="'Product category'"
+        [attr.aria-required]="true"
+        [attr.aria-invalid]="productForm.get('category')?.invalid && productForm.get('category')?.touched">
+      <mat-error *ngIf="productForm.get('category')?.hasError('required')" data-testid="category-error" role="alert">
+        Category is required
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Price Field -->
+    <mat-form-field appearance="outline">
+      <mat-label>Price</mat-label>
+      <input 
+        matInput 
+        type="number"
+        formControlName="price"
+        placeholder="Enter product price"
+        required
+        min="0"
+        data-testid="price-input"
+        [attr.aria-label]="'Product price'"
+        [attr.aria-required]="true"
+        [attr.aria-invalid]="productForm.get('price')?.invalid && productForm.get('price')?.touched">
+      <span matPrefix>$&nbsp;</span>
+      <mat-error *ngIf="productForm.get('price')?.hasError('required')" data-testid="price-error" role="alert">
+        Price is required
+      </mat-error>
+      <mat-error *ngIf="productForm.get('price')?.hasError('min')">
+        Price must be greater than or equal to 0
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Description Field -->
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea 
+        matInput 
+        formControlName="description"
+        placeholder="Enter product description"
+        rows="4"
+        data-testid="description-input"
+        [attr.aria-label]="'Product description'"
+        [attr.aria-required]="true">
+      </textarea>
+    </mat-form-field>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button 
+        mat-button 
+        type="button"
+        [routerLink]="['/']">
+        Cancel
+      </button>
+      <button 
+        mat-flat-button 
+        color="primary" 
+        type="submit"
+        data-testid="submit-button"
+        [disabled]="productForm.invalid || loading"
+        [attr.aria-label]="isEditMode ? 'Update product' : 'Create product'">
+        <mat-spinner 
+          *ngIf="loading" 
+          diameter="20" 
+          class="button-spinner">
+        </mat-spinner>
+        {{isEditMode ? 'Update' : 'Create'}}
+      </button>
+    </div>
+  </form>
+</div>

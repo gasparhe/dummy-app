@@ -9,7 +9,7 @@ import { DataTableComponent } from './components/data-table/data-table.component
   template: `
     <div class="container">
       <h1>Data Table Demo</h1>
-      <app-data-table></app-data-table>
+      <router-outlet></router-outlet>
     </div>
   `,
   styles: [`
