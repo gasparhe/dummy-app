@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
   `
 })
 export class ActionButtonComponent {
-  @Input() icon: 'edit'|'delete' = 'edit'; // 'edit' o 'delete'
+  @Input() icon: 'edit'|'delete' = 'edit';
   @Input() iconClass: string = '';
   @Input() action: () => void = () => {};
 

@@ -108,7 +108,7 @@ describe('DataTableComponent', () => {
 
   it('should navigate on edit', () => {
     component.onEdit(mockProductData.products[0]);
-    expect(routerMock.navigate).toHaveBeenCalledWith(['/edit', mockProductData.products[0].id]);
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/product/', mockProductData.products[0].id]);
   });
 
   it('should have a delete button', () => {

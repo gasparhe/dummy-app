@@ -10,7 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ProductService, Product } from '../../services/product.service';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';import { ActionButtonComponent } from '../action-button/action-button.component';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators'; import { ActionButtonComponent } from '../action-button/action-button.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 
@@ -34,11 +34,19 @@ import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-d
   template: `
     <mat-form-field appearance="outline" class="w-100">
       <mat-label>Search</mat-label>
-      <input matInput [formControl]="searchControl" placeholder="Search products...">
-      <mat-icon matSuffix>search</mat-icon>
+      <input matInput [formControl]="searchControl" placeholder="Search products..." data-testid="search-input" aria-label="Search products">
+      <button mat-icon-button matSuffix data-testid="search-button">
+        <mat-icon>search</mat-icon>
+      </button>
     </mat-form-field>
 
-    <table mat-table [dataSource]="products" matSort class="mat-elevation-z8">
+    
+    <button mat-raised-button color="primary" (click)="createNewProduct()" class="action-button" aria-label="Create new product" data-testid="add-product-button">
+      <mat-icon>add</mat-icon>
+      <span>New Product</span>
+    </button>
+    
+    <table mat-table [dataSource]="products" matSort class="mat-elevation-z8" data-testid="product-list" role="list">
       <!-- Image Column -->
       <ng-container matColumnDef="image">
         <th mat-header-cell *matHeaderCellDef>Image</th>
@@ -49,7 +57,7 @@ import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-d
 
       <ng-container matColumnDef="title">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
-        <td mat-cell *matCellDef="let product" class="cell-title">{{product.title}}</td>
+        <td mat-cell *matCellDef="let product" class="cell-title" data-testid="product-title">{{product.title}}</td>
       </ng-container>
 
       <ng-container matColumnDef="category">
@@ -69,18 +77,22 @@ import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-d
           <app-action-button
             [icon]="'edit'"
             [iconClass]="'icon-orange'"
-            [action]="onEdit.bind(this, product)">
+            [action]="onEdit.bind(this, product)"
+            data-testid="edit-button"
+            aria-label="Edit product">
           </app-action-button>
           <app-action-button
             [icon]="'delete'"
             [iconClass]="'icon-red'"
-            [action]="onDelete.bind(this, product)">
+            [action]="onDelete.bind(this, product)"
+            data-testid="delete-button"
+            aria-label="Delete product">
           </app-action-button>
         </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" data-testid="product-card" role="listitem"></tr>
     </table>
 
     <mat-paginator 
@@ -89,6 +101,12 @@ import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-d
       [pageSizeOptions]="[5, 10, 25, 100]"
       (page)="handlePageEvent($event)"
       aria-label="Select page">
+      <button mat-icon-button data-testid="previous-page-button" aria-label="Previous page">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button mat-icon-button data-testid="next-page-button" aria-label="Next page">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
     </mat-paginator>
   `
 })
@@ -106,7 +124,7 @@ export class DataTableComponent implements OnInit, AfterViewInit {
     private productService: ProductService,
     private router: Router,
     private dialog: MatDialog
-  ) {}
+  ) { }
 
   ngOnInit() {
     // Set debounce in the search
@@ -118,14 +136,14 @@ export class DataTableComponent implements OnInit, AfterViewInit {
         if (query) {
           this.paginator.pageIndex = 0;
         }
-        
+
         const params = {
           limit: this.paginator?.pageSize || 10,
           skip: query ? 0 : (this.paginator?.pageIndex * (this.paginator?.pageSize || 10))
         };
-        
-        return query ? 
-          this.productService.searchProducts(query, params) : 
+
+        return query ?
+          this.productService.searchProducts(query, params) :
           this.productService.getProducts(params);
       })
     ).subscribe(response => {
@@ -140,9 +158,13 @@ export class DataTableComponent implements OnInit, AfterViewInit {
     this.loadProducts();
   }
 
-  
+
+  createNewProduct() {
+    this.router.navigate(['/product/']);
+    }
+    
   onEdit(product: Product) {
-    this.router.navigate(['/edit', product.id]);
+    this.router.navigate(['/product/', product.id]);
   }
 
   onDelete(product: Product) {
@@ -156,7 +178,7 @@ export class DataTableComponent implements OnInit, AfterViewInit {
     // With the current API, we don't need reload the table after the deletion because server doesn't remove the item.
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Product deleted:', product, 'the instruction `this.loadProducts();` is not needed' );
+        console.log('Product deleted:', product, 'the instruction `this.loadProducts();` is not needed');
       }
     });
 
@@ -206,7 +228,7 @@ export class DataTableComponent implements OnInit, AfterViewInit {
     };
 
     const query = this.searchControl.value;
-    
+
     if (query) {
       this.productService.searchProducts(query, params).subscribe(response => {
         this.products = response.products;
@@ -225,6 +247,6 @@ export class DataTableComponent implements OnInit, AfterViewInit {
       });
     }
   }
-  
+
 
 }
