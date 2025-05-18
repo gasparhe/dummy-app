@@ -5,14 +5,20 @@ import { DataTableComponent } from '../../components/data-table/data-table.compo
 import { ProductFormComponent } from '../../components/product-form/product-form.component';
 
 const routes: Routes = [
-    { path: '', component: DataTableComponent },
-    { path: 'product', component: ProductFormComponent },
+    { 
+        path: '', 
+        component: DataTableComponent,
+        data: { renderMode: 'client' }
+    },
+    { 
+        path: 'product', 
+        component: ProductFormComponent,
+        data: { renderMode: 'client' }
+    },
     {
         path: 'product/:pId', 
         component: ProductFormComponent,
-        data: {
-            renderMode: 'client'
-        }
+        data: { renderMode: 'client' }
     }
 ];
 
