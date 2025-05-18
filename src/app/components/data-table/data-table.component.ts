@@ -11,6 +11,8 @@ import { Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ProductService, Product } from '../../services/product.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';import { ActionButtonComponent } from '../action-button/action-button.component';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 
 @Component({
   selector: 'app-data-table',
@@ -25,7 +27,8 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';i
     MatIconModule,
     MatButtonModule,
     ReactiveFormsModule,
-    ActionButtonComponent
+    ActionButtonComponent,
+    MatDialogModule
   ],
   styleUrls: ['./data-table.component.css'],
   template: `
@@ -101,7 +104,8 @@ export class DataTableComponent implements OnInit, AfterViewInit {
 
   constructor(
     private productService: ProductService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -142,7 +146,41 @@ export class DataTableComponent implements OnInit, AfterViewInit {
   }
 
   onDelete(product: Product) {
-    this.router.navigate(['/delete', product.id]);
+    const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      width: '400px',
+      data: product
+    });
+
+    const dialogInstance = dialogRef.componentInstance;
+
+    // With the current API, we don't need reload the table after the deletion because server doesn't remove the item.
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Product deleted:', product, 'the instruction `this.loadProducts();` is not needed' );
+      }
+    });
+
+
+    const subscription = dialogRef.componentInstance.confirmed.subscribe(() => {
+      this.productService.deleteProduct(product.id).subscribe({
+        next: () => {
+          dialogInstance.setComplete(true);
+          // The server don't remove the item, so we simulate the remove in the front end to avoid reload the table and lose the current page.
+          this.products = this.products.filter(p => p.id !== product.id);
+          this.totalProducts--;
+          if (this.table) {
+            this.table.renderRows();
+          }
+        },
+        error: () => {
+          dialogInstance.setComplete(false);
+        }
+      });
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      subscription.unsubscribe();
+    });
   }
 
   ngAfterViewInit() {

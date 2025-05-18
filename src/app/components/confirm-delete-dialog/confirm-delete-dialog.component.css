@@ -1,0 +1,9 @@
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  .loading-container p {
+    margin-top: 16px;
+  }
