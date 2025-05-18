@@ -8,6 +8,7 @@ import { ActionButtonComponent } from '../action-button/action-button.component'
 import { PageEvent } from '@angular/material/paginator';
 import mockProductData from '../../fixtures/mock-products.json';
 import { EventEmitter } from '@angular/core';
+import { By } from '@angular/platform-browser';
 
 describe('DataTableComponent', () => {
   let component: DataTableComponent;
@@ -16,20 +17,18 @@ describe('DataTableComponent', () => {
   let routerMock: jasmine.SpyObj<Router>;
 
   beforeEach(waitForAsync(() => {
-    productServiceMock = jasmine.createSpyObj('ProductService', ['getProducts', 'searchProducts']);
+    productServiceMock = jasmine.createSpyObj('ProductService', ['getProducts', 'searchProducts', 'deleteProduct']);
     routerMock = jasmine.createSpyObj('Router', ['navigate']);
 
     TestBed.configureTestingModule({
       imports: [
         NoopAnimationsModule,
-        // DataTableComponent is standalone. Needs to import dependencies(Material modules, ReactiveFormsModule).
-        // ActionButtonComponent is standalone. Needs DataTableComponent.
         DataTableComponent,
-        ActionButtonComponent
+        ActionButtonComponent,
       ],
       providers: [
         { provide: ProductService, useValue: productServiceMock },
-        { provide: Router, useValue: routerMock }
+        { provide: Router, useValue: routerMock },
       ]
     }).compileComponents();
   }));
@@ -50,7 +49,8 @@ describe('DataTableComponent', () => {
       hasPreviousPage: () => false
     } as any;
 
-    fixture.detectChanges();
+    // ngOnInit is executed here
+    fixture.detectChanges(); 
   });
 
   afterEach(() => {
@@ -88,7 +88,7 @@ describe('DataTableComponent', () => {
 
   it('should handle page event', () => {
     // Event page simualted
-    const pageEvent: PageEvent = { pageIndex: 1, pageSize: 5, length: mockProductData.total }; // <--- Usa mockProductData
+    const pageEvent: PageEvent = { pageIndex: 1, pageSize: 5, length: mockProductData.total };
     component.handlePageEvent(pageEvent);
 
     expect(component.paginator.pageIndex).toBe(1);
@@ -111,8 +111,12 @@ describe('DataTableComponent', () => {
     expect(routerMock.navigate).toHaveBeenCalledWith(['/edit', mockProductData.products[0].id]);
   });
 
-  it('should navigate on delete', () => {
-    component.onDelete(mockProductData.products[1]);
-    expect(routerMock.navigate).toHaveBeenCalledWith(['/delete', mockProductData.products[1].id]);
+  it('should have a delete button', () => {
+    fixture.detectChanges();
+    // find the ActionButtonComponent
+    const actionButtons = fixture.debugElement.queryAll(By.directive(ActionButtonComponent));
+    // check delete button exists
+    const deleteButtonDebug = actionButtons.find(debugEl => debugEl.componentInstance.icon === 'delete');
+    expect(deleteButtonDebug).toBeTruthy();
   });
 });

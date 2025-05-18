@@ -51,4 +51,8 @@ export class ProductService {
       `${this.baseUrl}/search?q=${query}&${queryParams}`
     );
   }
+
+  deleteProduct(id: number): Observable<Product> {
+    return this.http.delete<Product>(`${this.baseUrl}/${id}`);
+  }
 }
