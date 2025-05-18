@@ -1,6 +1,9 @@
 ## Author
 Gaspar Hernández Estevan
 
+## Demo:
+`https://dummy-app-git-vercel-ssr-issues-gasparhes-projects.vercel.app`
+
 # Product Management Application
 
 ## Project Description
@@ -19,6 +22,9 @@ This application is a product management system developed with Angular 19.2.0, e
 - Robust error handling
 - End-to-end testing with Cypress
 - Responsive and modern design
+- Lazy loading implementation
+- Server-Side Rendering (SSR) (Prerendering is disabled)
+- Continuous Integration/Continuous Deployment (CI/CD)
 
 ## Project Setup
 
@@ -111,6 +117,29 @@ refactor: code refactoring
 2. A centralized error handling system was implemented
 3. Accessibility was prioritized from the initial design
 4. End-to-end tests were chosen to ensure complete functionality
+
+## Performance Optimization
+
+### Lazy Loading
+- Implementation of lazy-loaded feature modules
+- Route-based code splitting
+- Dynamic import of components
+- Optimized bundle size management
+
+### Server-Side Rendering (SSR) (Disabled Prerendering)
+- Angular Universal implementation for SSR
+- Improved performance on low-end devices
+
+## Continuous Integration/Continuous Deployment
+
+### GitHub Actions Workflow
+- Automated build and test pipeline
+- Code quality checks and linting
+- End-to-end test execution
+- Automated version management
+
+### Vercel Deployment
+- Automatic deployment on push to main branch
 
 ## Future Improvements
 - Implementation of additional unit tests
