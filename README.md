@@ -1,59 +1,119 @@
-# DummyApp
+## Author
+Gaspar Hernández Estevan
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.12.
+# Product Management Application
 
-## Development server
+## Project Description
+This application is a product management system developed with Angular 19.2.0, enabling CRUD operations (Create, Read, Update, Delete) on products through a modern and accessible user interface.
 
-To start a local development server, run:
+## Technologies Used
+- Angular 19.2.0
+- Angular Material
+- TypeScript
+- Cypress for testing
+- DummyJSON API for backend
 
+## Key Features
+- Product form with complete validation
+- Web accessibility implementation (ARIA)
+- Robust error handling
+- End-to-end testing with Cypress
+- Responsive and modern design
+
+## Project Setup
+
+### Prerequisites
+- Node.js (version 18 or higher)
+- npm (version 9 or higher)
+- Angular CLI 19.2.0
+
+### Installation
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd dummy-app
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+The application will be available at `http://localhost:4200`
 
-## Code scaffolding
+## Testing
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### End-to-End Tests
+The project uses Cypress for end-to-end testing. The tests verify:
+- Correct product form loading
+- Field validation
+- API error handling
+- Complete product update flow
 
+To run the tests:
 ```bash
-ng generate component component-name
+npm run cypress:open
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Technical Decisions
 
-```bash
-ng generate --help
+### Architecture
+- **Services**: Implementation of services to handle business logic and API calls
+- **Components**: Modular design with reusable components
+- **Reactive Forms**: Use of FormGroup for robust form handling
+
+### Accessibility
+- Complete implementation of ARIA attributes
+- Error messages with role="alert"
+- Descriptive labels for all fields
+- Optimized keyboard navigation
+
+### Patterns and Principles
+- **SOLID**: Application of SOLID principles in code architecture
+- **Clean Code**: Descriptive names, small functions, and self-documenting code
+- **DRY**: Avoiding code duplication through reusable components and services
+
+## Git Strategy
+
+### Branching Strategy
+- `master`: Production main branch
+- `*`: Feature ang Bug fix branches
+
+### Commit Conventions
+```
+feat: new feature
+fix: bug fix
+docs: documentation changes
+test: add or modify tests
+refactor: code refactoring
 ```
 
-## Building
+## AI Tools Usage
 
-To build the project run:
+### Trae code editor
+- Used for code completion and implementation suggestions
 
-```bash
-ng build
-```
+### ChatGPT
+- Used for best practices consultation
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Additional Notes
+- The application uses the public DummyJSON API to simulate a backend
+- Network error interceptors have been implemented
+- Tests are designed to be robust and maintain code quality
 
-## Running unit tests
+## Assumptions and Decisions
+1. Angular Material was chosen to maintain a consistent and accessible UI
+2. A centralized error handling system was implemented
+3. Accessibility was prioritized from the initial design
+4. End-to-end tests were chosen to ensure complete functionality
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Future Improvements
+- Implementation of additional unit tests
+- Improvement in test coverage
+- Implementation of caching to optimize performance
+- Addition of more accessibility features
