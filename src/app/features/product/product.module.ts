@@ -1,0 +1,21 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule, Routes } from '@angular/router';
+import { DataTableComponent } from '../../components/data-table/data-table.component';
+import { ProductFormComponent } from '../../components/product-form/product-form.component';
+
+const routes: Routes = [
+  { path: '', component: DataTableComponent },
+  { path: 'product', component: ProductFormComponent },
+  { path: 'product/:pId', component: ProductFormComponent }
+];
+
+@NgModule({
+  imports: [
+    CommonModule,
+    RouterModule.forChild(routes),
+    DataTableComponent,
+    ProductFormComponent
+  ]
+})
+export class ProductModule { }
