@@ -3,7 +3,8 @@ import { ConfirmDeleteDialogComponent } from './confirm-delete-dialog.component'
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import mockProductData from '../../fixtures/mock-products.json';
-import { Product, ProductService } from '../../services/product.service';
+import { ProductService } from '../../services/product.service';
+import { Product } from '../../models/product.model';
 import { of, throwError } from 'rxjs';
 
 describe('ConfirmDeleteDialogComponent', () => {
