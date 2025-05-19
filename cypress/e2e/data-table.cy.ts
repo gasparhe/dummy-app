@@ -6,7 +6,7 @@ describe('Data Table', () => {
   });
 
   it('should show the page title', () => {
-    cy.get('h1').should('contain', 'Data Table Demo');
+    cy.get('h1').should('contain', 'DUMMY APP');
   });
 
   it('should display the table with data', () => {

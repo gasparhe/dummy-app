@@ -1,0 +1,56 @@
+<div class="product-container" *ngIf="product; else loading" 
+     role="main" 
+     aria-labelledby="product-title">
+  <mat-card class="product-card" tabindex="0">
+    <mat-card-header>
+      <mat-card-title id="product-title" class="product-title">
+        {{product.title}}
+      </mat-card-title>
+      <mat-card-subtitle>
+        {{product.category}}
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <div class="image-gallery" role="region" aria-label="Product images">
+      <img *ngFor="let image of product.images; let i = index"
+           [src]="image"
+           [alt]="product.title + ' image ' + (i + 1)"
+           class="product-image"
+           (error)="handleImageError($event)"
+
+           loading="lazy">
+    </div>
+
+    <mat-card-content>
+      <p class="price" aria-label="Product price">
+        ${{product.price.toFixed(2)}}
+      </p>
+      <p class="description" aria-label="Product description">
+        {{product.description}}
+      </p>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-button 
+              aria-label="Back to products list"
+              (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Back
+      </button>
+      <button mat-raised-button 
+              color="primary"
+              aria-label="Edit product"
+              (click)="editProduct()">
+        <mat-icon>edit</mat-icon>
+        Edit
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+
+<ng-template #loading>
+  <div class="loading-container" role="alert" aria-label="Loading product information">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading product details...</p>
+  </div>
+</ng-template>
