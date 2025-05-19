@@ -2,14 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface Product {
-  id: number;
-  title: string;
-  description: string;
-  category: string;
-  price: number;
-  images: string[];
-}
+import { Product } from '../models/product.model';
 
 export interface ProductResponse {
   products: Product[];

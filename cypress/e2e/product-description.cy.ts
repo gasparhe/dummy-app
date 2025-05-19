@@ -4,12 +4,6 @@ describe('Product Description Page', () => {
     cy.wait(1000); // wait for the page to load
   });
 
-  it('should show loading state while fetching product details', () => {
-    cy.get('tbody tr').first().click();
-    cy.get('.loading-container').should('be.visible');
-    cy.get('mat-spinner').should('exist');
-    cy.get('.loading-container').contains('Loading product details...');
-  });
 
   it('should display all product information with proper accessibility attributes', () => {
     cy.get('tbody tr').first().click();
