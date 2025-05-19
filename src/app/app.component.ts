@@ -7,7 +7,7 @@ import { RouterOutlet } from '@angular/router';
   imports: [RouterOutlet],
   template: `
     <div class="container">
-      <h1>Data Table Demo</h1>
+      <h1>DUMMY APP</h1>
       <router-outlet></router-outlet>
     </div>
   `,

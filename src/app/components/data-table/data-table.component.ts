@@ -9,7 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ProductService, Product } from '../../services/product.service';
+import { ProductService } from '../../services/product.service';
+import { Product } from '../../models/product.model';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators'; import { ActionButtonComponent } from '../action-button/action-button.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
@@ -92,7 +93,12 @@ import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-d
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;" data-testid="product-card" role="listitem"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+          data-testid="product-card" 
+          role="listitem"
+          (click)="onRowClick(row)"
+          class="clickable-row"
+          [attr.aria-label]="'View details of ' + row.title"></tr>
     </table>
 
     <mat-paginator 
@@ -165,6 +171,10 @@ export class DataTableComponent implements OnInit, AfterViewInit {
     
   onEdit(product: Product) {
     this.router.navigate(['/product/', product.id]);
+  }
+
+  onRowClick(product: Product) {
+    this.router.navigate([`/product-description/${product.id}`]);
   }
 
   onDelete(product: Product) {
